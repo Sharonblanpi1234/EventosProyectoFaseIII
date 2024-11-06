@@ -3,10 +3,29 @@ import { Image, StyleSheet, TouchableOpacity } from "react-native";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { useFonts } from "expo-font";
 import { TabBarIcon } from "@/components/navigation/TabBarIcon";
+import { useRouter } from "expo-router";
+import { useLoadUser } from "@/hooks/loadUser";
+import useLoadEvents from "@/hooks/loadEvents";
 
 export default function HomeScreen() {
+  const router = useRouter();
+
+  const handleEvent = () => {
+    router.push("/EventForm");
+  };
+
+  const handleServices = () => {
+    router.push("/services");
+  };
+
+  const handleEvents = () => {
+    router.push("/eventList");
+  };
+
+  const handleFollow = () => {
+    router.push("/idForm");
+  };
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
@@ -28,21 +47,21 @@ export default function HomeScreen() {
       }
     >
       <ThemedView style={styles.buttonsContainer}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={handleEvent}>
           <ThemedText style={styles.buttonText} type="button">
             Crear Evento
           </ThemedText>
           <TabBarIcon name={"create-outline"} />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={handleEvents}>
           <ThemedText style={styles.buttonText} type="button">
             Ver Eventos
           </ThemedText>
           <TabBarIcon name={"calendar"} />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={handleFollow}>
           <ThemedText style={styles.buttonText} type="button">
             Ver Seguimiento
           </ThemedText>
@@ -50,7 +69,7 @@ export default function HomeScreen() {
           <TabBarIcon name={"analytics"} />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={handleServices}>
           <ThemedText style={styles.buttonText} type="button">
             Visualizar Proveedores
           </ThemedText>

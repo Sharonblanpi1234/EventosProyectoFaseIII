@@ -34,6 +34,12 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="login" options={{ title: "Iniciar Sesión" }} />
+        <Stack.Screen name="services" options={{ title: "Servicios" }} />
+        <Stack.Screen name="showProviders" options={{ title: "Providers" }} />
+        <Stack.Screen name="EventForm" options={{ title: "Crear evento" }} />
+        <Stack.Screen name="eventList" options={{ title: "Ver eventos" }} />
+        <Stack.Screen name="idForm" options={{ title: "Ver Seguimiento" }} />
       </Stack>
     </ThemeProvider>
   );
