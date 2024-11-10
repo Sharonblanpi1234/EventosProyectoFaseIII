@@ -1,5 +1,12 @@
+import { Link } from "expo-router";
 import React, { useState } from "react";
-import { View, TextInput, StyleSheet, Text } from "react-native";
+import {
+  View,
+  TextInput,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+} from "react-native";
 
 const IdForm: React.FC = () => {
   const [idEvento, setIdEvento] = useState("");
@@ -17,8 +24,13 @@ const IdForm: React.FC = () => {
           onChangeText={(text) => setIdEvento(text.replace(/[^0-9]/g, ""))} // Solo números
           keyboardType="numeric"
         />
-        <Text style={styles.button}>Ver estado</Text>
       </View>
+      <TouchableOpacity style={styles.button}>
+        {/* Link envuelve todo el TouchableOpacity */}
+        <Link href={`/eventProviderList?idEvento=${idEvento}`} asChild>
+          <Text style={styles.button}>Ver Estado</Text>
+        </Link>
+      </TouchableOpacity>
     </View>
   );
 };

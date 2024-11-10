@@ -1,41 +1,32 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { Alert } from "react-native";
 
 // eventTypes.ts (puedes crear un archivo separado para esto)
-export interface EventData {
-    id_evento?: number;
-    id_cliente: number | undefined;
-    nombre_evento: string;
-    fecha_evento: string;
-    hora_inicio: string;
-    hora_final: string;
-    alimentacion: string;
-    decoracion: string;
-    transporte: string;
-    alquiler_lugar: string;
-    comentarios: string;
-    asistentes: number;
+export interface EventRequest {
+    id_evento: number | undefined;
+    id_proveedor: number;
 }
 
-interface EventAPIProps {
-    eventData: EventData;
+interface EventRequestProps {
+    eventRequest: EventRequest;
+    setIsSubmitting: React.Dispatch<React.SetStateAction<boolean>>;
     onSuccess: (responseData: any) => void;
     onError: (errorMessage: string) => void;
-    setIsSubmitting: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 
-const EventAPI: React.FC<EventAPIProps> = ({ eventData, onSuccess, onError, setIsSubmitting }) => {
+const EventRequestFunction: React.FC<EventRequestProps> = ({ eventRequest,onSuccess, onError, setIsSubmitting }) => {
     useEffect(() => {
         const sendEventData = async () => {
             console.log("Intentando enviar datos del evento...");
             setIsSubmitting(true);
             try {
-                const response = await fetch("http://10.0.2.2:5000/events", {
+                const response = await fetch("http://10.0.2.2:5000/evento_proveedor", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify(eventData),
+                    body: JSON.stringify(eventRequest),
                 });
 
                 if (response.ok) {
@@ -55,15 +46,12 @@ const EventAPI: React.FC<EventAPIProps> = ({ eventData, onSuccess, onError, setI
             }
         };
 
-        if (eventData) {
+        if (eventRequest) {
             sendEventData();
         }
-    }, [eventData, onSuccess, onError]); // Solo ejecuta cuando cambia eventData
-
+    }, [eventRequest, onSuccess, onError]); // Solo ejecuta cuando cambia eventData
     return null;
 };
 
 
-export default EventAPI;
-
-
+export default EventRequestFunction;

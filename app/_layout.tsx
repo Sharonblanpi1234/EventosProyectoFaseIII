@@ -40,6 +40,10 @@ export default function RootLayout() {
         <Stack.Screen name="EventForm" options={{ title: "Crear evento" }} />
         <Stack.Screen name="eventList" options={{ title: "Ver eventos" }} />
         <Stack.Screen name="idForm" options={{ title: "Ver Seguimiento" }} />
+        <Stack.Screen
+          name="EventProviderList"
+          options={{ title: "Ver estado solicitud" }}
+        />
       </Stack>
     </ThemeProvider>
   );

@@ -12,8 +12,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import User from "../components/user";
 
 export default function LoginScreen() {
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [password_hash, setPassword_hash] = useState("");
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
 
@@ -34,12 +34,13 @@ export default function LoginScreen() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name, email }),
+        body: JSON.stringify({ email, password_hash }),
       });
 
       const data = await response.json();
-
-      if (data.id && data.id !== 0) {
+      //data.id.length !== 0
+      console.log(data);
+      if (data && data.id !== 0) {
         const newUser = new User(data.id, data.name);
         setUser(newUser);
         saveUser(newUser);
@@ -68,15 +69,15 @@ export default function LoginScreen() {
       <>
         <TextInput
           style={styles.input}
-          placeholder="Nombre"
-          value={name}
-          onChangeText={setName}
-        />
-        <TextInput
-          style={styles.input}
           placeholder="Correo"
           value={email}
           onChangeText={setEmail}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Contraseña"
+          value={password_hash}
+          onChangeText={setPassword_hash}
         />
         <TouchableOpacity style={styles.button} onPress={handleLogin}>
           <ThemedText style={styles.buttonText} type="button">

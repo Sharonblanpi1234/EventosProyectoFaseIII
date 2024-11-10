@@ -5,27 +5,38 @@ import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import User from "@/components/user";
 import { useLoadUser } from "@/hooks/loadUser";
+
 export default function Login() {
   const router = useRouter();
-  const { user, loadUserData } = useLoadUser();
+  const { user, loadUserData } = useLoadUser(); // Asegúrate de no usar let aquí
+  const [localUser, setLocalUser] = useState(user); // Agrega un estado local si no usas `setUser`
+
+  // Cargar el usuario al montar el componente
+  useEffect(() => {
+    const loadUser = async () => {
+      const storedUser = await AsyncStorage.getItem("user");
+      if (storedUser) {
+        setLocalUser(JSON.parse(storedUser));
+      }
+    };
+    loadUser();
+  }, [user]); // `user` como dependencia para actualizar cuando cambia
 
   const handleLogin = () => {
     router.push("/login");
   };
 
-  const deleteTeam = async (userName: string) => {
+  const deleteUser = async () => {
     try {
-      await AsyncStorage.removeItem(userName);
+      await AsyncStorage.removeItem("user");
+      setLocalUser(undefined); // Usa `setLocalUser` para actualizar el estado local
     } catch (error) {
-      console.error("Error deleting team:", error);
+      console.error("Error deleting user:", error);
     }
   };
 
   const handleLogout = async () => {
-    if (user) {
-      await deleteTeam("user");
-      //setUser(null);
-    }
+    await deleteUser();
   };
 
   return (
@@ -33,13 +44,13 @@ export default function Login() {
       <ThemedText style={styles.title} type="title">
         Iniciar Sesión
       </ThemedText>
-      {user ? (
+      {localUser ? (
         <>
-          <Text>Bienvenido {user.name}</Text>
-          <Button title="log Out" onPress={handleLogout} />
+          <Text>Bienvenido {localUser.name}</Text>
+          <Button title="Log Out" onPress={handleLogout} />
         </>
       ) : (
-        <Button title="log In" onPress={handleLogin} />
+        <Button title="Log In" onPress={handleLogin} />
       )}
     </View>
   );
@@ -57,14 +68,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
     marginBottom: 20,
-  },
-  input: {
-    height: 50,
-    borderColor: "black",
-    borderWidth: 1,
-    borderRadius: 10,
-    paddingHorizontal: 10,
-    marginBottom: 15,
   },
   button: {
     backgroundColor: "#1D3D47",

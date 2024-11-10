@@ -1,4 +1,6 @@
 import useLoadProvider from "@/hooks/loadProvider";
+import { Link, router, useLocalSearchParams } from "expo-router";
+import { Route } from "expo-router/build/Route";
 import { useState } from "react";
 import {
   ScrollView,
@@ -14,20 +16,21 @@ type ProvidersProps = {
 
 export default function Providers({ provider }: ProvidersProps) {
   const { provider: providers, loading, error } = useLoadProvider(provider);
-  const [idsProvider, setIdsProvider] = useState<number[]>([]);
+  const [eventoId, setEventoId] = useState<number>(0);
+  const { eventId, message } = useLocalSearchParams();
 
   if (loading) return <Text style={styles.loadingText}>Cargando...</Text>;
   if (error) return <Text style={styles.errorText}>{error}</Text>;
 
-  const handleId = (id: number) => {
-    setIdsProvider((prevIds) => {
-      if (prevIds.includes(id)) {
-        return prevIds.filter((itemId) => itemId !== id);
-      } else {
-        return [...prevIds, id];
-      }
-    });
-  };
+  // const handleId = (id: number) => {
+  //   setIdsProvider((prevIds) => {
+  //     if (prevIds.includes(id)) {
+  //       return prevIds.filter((itemId) => itemId !== id);
+  //     } else {
+  //       return [...prevIds, id];
+  //     }
+  //   });
+  // };
 
   return (
     <ScrollView contentContainerStyle={styles.buttonsContainer}>
@@ -36,24 +39,33 @@ export default function Providers({ provider }: ProvidersProps) {
           <View style={styles.providerDetails}>
             <TouchableOpacity
               style={styles.button}
-              onPress={() => handleId(provider.id_proveedor)}
+              //onPress={() => handleId(provider.id_proveedor)}
             >
-              <Text style={styles.buttonText}>{provider.nombre_proveedor}</Text>
+              <Text style={styles.buttonText}>{provider.nombre}</Text>
               <Text style={styles.serviceText}>
                 Servicio: {provider.servicio}
               </Text>
-              <Text style={styles.contactText}>
-                Contacto: {provider.contacto_proveedor}
-              </Text>
+              <Text style={styles.contactText}>Email: {provider.email}</Text>
               <Text style={styles.phoneText}>
-                Teléfono: {provider.telefono_proveedor}
+                Teléfono: {provider.telefono}
               </Text>
               <Text style={styles.addressText}>
-                Dirección: {provider.direccion_proveedor}
+                Dirección: {provider.direccion}
+              </Text>
+              <Text style={styles.addressText}>
+                WebSide: {provider.website}
               </Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.submitButton}>
-              <Text style={styles.submitButtonText}>Enviar</Text>
+              {/* Link envuelve todo el TouchableOpacity */}
+              <Link
+                href={`/eventList?providerId=${provider.id_proveedor}&message=Seleccione el evento`}
+                asChild
+              >
+                <Text style={styles.submitButtonText}>
+                  Ir a la lista de eventos
+                </Text>
+              </Link>
             </TouchableOpacity>
           </View>
         </View>

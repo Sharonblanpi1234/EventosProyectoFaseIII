@@ -1,51 +1,43 @@
 import { useState, useEffect } from "react";
 import { Alert } from "react-native";
 
-// // Interfaces
-// interface Provider {
-//   id_proveedor: number;
-//   nombre: string;
-//   servicio: string;
-//   contacto_proveedor: string;
-//   telefono_proveedor: string;
-//   direccion_proveedor: string;
-// }
-// Interfaces
-interface Provider {
-  id_proveedor: number;
-  nombre: string;
-  servicio: string;
-  email: string;
-  telefono: string;
-  direccion: string;
-  website: string;
+interface EventProvider {
+  nombre_proveedor: string,
+  nombre_evento: string,
+  servicio: string,
+  estado: string,
+  fecha_respuesta: string,
+  justificacion: string,
 }
 
 interface ProvidersResponse {
-  proveedores: Provider[];
+  listaConexiones: EventProvider[];
 }
 
-export default function useLoadProvider(service: string) {
-  const [provider, setProvider] = useState<ProvidersResponse | null>(null);
+export default function useLoadEventProvider(id_evento: number, userId:number | undefined) {
+  const [eventProvider, setEventProvider] = useState<ProvidersResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  
 
   useEffect(() => {
-    
+    if (userId === undefined) {
+      setLoading(false);
+      return;
+    }
     const fetchProvider = async () => {
       try {
-        const response = await fetch("http://10.0.2.2:5000/providers", {
+        const response = await fetch("http://10.0.2.2:5000/showEventProvider", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ service }),
+          body: JSON.stringify({ id_evento, userId }),
         });
 
         const data: ProvidersResponse = await response.json();
-        if (data && data.proveedores.length > 0) {
-          setProvider(data);
+        console.log(data);
+        if (data && data.listaConexiones.length > 0) {
+            setEventProvider(data);
         } else {
           Alert.alert(
             "Error",
@@ -65,7 +57,7 @@ export default function useLoadProvider(service: string) {
     };
 
     fetchProvider();
-  }, [service]);
+  }, [id_evento, userId]);
 
-  return { provider, loading, error };
+  return { eventProvider, loading, error };
 }

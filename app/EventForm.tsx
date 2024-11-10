@@ -34,11 +34,9 @@ export default function EventForm() {
   const [showEndTimePicker, setShowEndTimePicker] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [eventData, setEventData] = useState<EventData | null>(null); // Estado para pasar los datos a EventAPI
-  const [isSending, setIsSending] = useState(false);
   //console.log("user", user?.id);
 
-  const handleSaveEvent = async () => {
-    // Validación de campos
+  const handleSaveEvent = () => {
     if (
       !nombreEvento ||
       !selectedDate ||
@@ -53,48 +51,28 @@ export default function EventForm() {
       Alert.alert("Error", "Por favor, completa todos los campos.");
       return;
     }
+    if (!user) {
+      Alert.alert("Error", "Necesita iniciar sesión para realizar esta acción");
+      return;
+    }
 
-    const newEventData: EventData = {
+    setEventData({
       id_cliente: user?.id,
       nombre_evento: nombreEvento,
       fecha_evento: selectedDate,
-      hora_inicio: startTime?.toISOString().slice(11, 19),
-      hora_final: endTime?.toISOString().slice(11, 19),
+      hora_inicio: startTime.toISOString().slice(11, 19),
+      hora_final: endTime.toISOString().slice(11, 19),
       alimentacion,
       decoracion,
       transporte,
       alquiler_lugar: alquilerLugar,
       comentarios,
       asistentes,
-    };
-
-    if (isSending) return; // Si ya se está enviando, no permitir otro envío
-    setIsSending(true); // Cambiar estado a enviando
-    // setEventData(newEventData); // Asigna los datos para el envío
-    // setIsSubmitting(true); // Indica que se está enviando el formulario
-    try {
-      // Llama a la función para enviar los datos (asegúrate de que sea asíncrona)
-      await sendEventData(newEventData); // Reemplaza con tu función para enviar datos
-      Alert.alert("Éxito", "Evento guardado correctamente.");
-    } catch (error) {
-      Alert.alert("Error", "Hubo un problema al guardar el evento.");
-      console.error("Error al guardar el evento:", error); // Log para depuración
-    } finally {
-      setIsSending(false); // Restablecer el estado de carga
-    }
-  };
-  const sendEventData = async (eventData: EventData) => {
-    <EventAPI
-      eventData={eventData}
-      onSuccess={handleSuccess}
-      onError={handleError}
-    />;
-    router.push("/(tabs)/");
+    });
   };
 
-  const handleSuccess = (responseData: any) => {
+  const handleSuccess = () => {
     Alert.alert("Éxito", "Evento guardado correctamente.");
-    // Reiniciar el formulario
     setNombreEvento("");
     setAlimentacion("");
     setDecoracion("");
@@ -105,14 +83,13 @@ export default function EventForm() {
     setStartTime(null);
     setEndTime(null);
     setAsistentes(0);
-    setIsSubmitting(false);
-    setEventData(null); // Restablece el estado para detener el envío
+    setEventData(null);
+    router.push("/(tabs)/");
   };
 
   const handleError = (errorMessage: string) => {
     Alert.alert("Error", errorMessage);
-    setIsSubmitting(false);
-    setEventData(null); // Restablece el estado para detener el envío
+    setEventData(null);
   };
 
   const handleCalendar = () => {
@@ -255,13 +232,14 @@ export default function EventForm() {
       <TouchableOpacity style={styles.button} onPress={handleSaveEvent}>
         <Text style={styles.buttonText}>Guardar Evento</Text>
       </TouchableOpacity>
-      {/* {eventData && (
-          <EventAPI
-            eventData={eventData}
-            onSuccess={handleSuccess}
-            onError={handleError}
-          />
-        )} */}
+      {eventData && !isSubmitting && (
+        <EventAPI
+          eventData={eventData}
+          onSuccess={handleSuccess}
+          onError={handleError}
+          setIsSubmitting={setIsSubmitting}
+        />
+      )}
     </ScrollView>
   );
 }
