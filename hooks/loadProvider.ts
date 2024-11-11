@@ -1,16 +1,6 @@
 import { useState, useEffect } from "react";
 import { Alert } from "react-native";
 
-// // Interfaces
-// interface Provider {
-//   id_proveedor: number;
-//   nombre: string;
-//   servicio: string;
-//   contacto_proveedor: string;
-//   telefono_proveedor: string;
-//   direccion_proveedor: string;
-// }
-// Interfaces
 interface Provider {
   id_proveedor: number;
   nombre: string;
@@ -24,7 +14,17 @@ interface Provider {
 interface ProvidersResponse {
   proveedores: Provider[];
 }
-
+/**
+ * Hook personalizado para cargar proveedores de un servicio específico.
+ * 
+ * Este hook realiza una solicitud HTTP para obtener la lista de proveedores que ofrecen un servicio determinado.
+ * Si los proveedores se cargan correctamente, actualiza el estado con los datos obtenidos. Si no se encuentran
+ * proveedores o ocurre un error, muestra una alerta al usuario.
+ * 
+ * @param {string} service - El nombre del servicio para el cual se buscan proveedores.
+ * 
+ * @returns {Object} - Un objeto que contiene los proveedores, el estado de carga y el error.
+ */
 export default function useLoadProvider(service: string) {
   const [provider, setProvider] = useState<ProvidersResponse | null>(null);
   const [error, setError] = useState<string | null>(null);

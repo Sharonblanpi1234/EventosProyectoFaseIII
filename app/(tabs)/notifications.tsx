@@ -12,16 +12,30 @@ import { Ionicons } from "@expo/vector-icons"; // Usando Ionicons para iconos
 import useLoadNotifications from "@/hooks/loadNotifications";
 import { useLoadUser } from "@/hooks/loadUser";
 
+/**
+ * Pantalla principal de notificaciones.
+ *
+ * Este componente carga las notificaciones del usuario y las muestra en una lista.
+ * Si no hay notificaciones, se muestra un mensaje indicándolo. También maneja los
+ * estados de carga y error.
+ */
+
 export default function Notifications() {
   const { user } = useLoadUser();
   const { notifications, loading, error } = useLoadNotifications(user?.id);
 
+  /**
+   * Si las notificaciones están cargando, se muestra un mensaje de carga.
+   */
   if (loading) {
     return (
       <ThemedText style={styles.loading}>Cargando notificaciones...</ThemedText>
     );
   }
 
+  /**
+   * Si ocurre un error al cargar las notificaciones, se muestra el mensaje de error.
+   */
   if (error) {
     return <ThemedText style={styles.error}>{error}</ThemedText>;
   }
@@ -90,11 +104,11 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     padding: 15,
     borderRadius: 10,
-    elevation: 3, // sombra para un efecto de elevación en dispositivos Android
-    shadowColor: "#000", // sombra en iOS
-    shadowOpacity: 0.1, // sombra suave
-    shadowRadius: 5, // radio de la sombra
-    shadowOffset: { width: 0, height: 4 }, // desplazamiento de la sombra
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    shadowOffset: { width: 0, height: 4 },
   },
   iconContainer: {
     justifyContent: "center",

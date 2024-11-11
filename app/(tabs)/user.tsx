@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View, Text, Button } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -8,10 +8,14 @@ import { useLoadUser } from "@/hooks/loadUser";
 
 export default function Login() {
   const router = useRouter();
-  const { user, loadUserData } = useLoadUser(); // Asegúrate de no usar let aquí
-  const [localUser, setLocalUser] = useState(user); // Agrega un estado local si no usas `setUser`
+  const { user, loadUserData } = useLoadUser();
+  const [localUser, setLocalUser] = useState<User | undefined>(user);
 
-  // Cargar el usuario al montar el componente
+  /**
+   * Efecto para cargar el usuario desde AsyncStorage al montar el componente.
+   * Si hay un usuario almacenado, lo establecemos en el estado local.
+   */
+
   useEffect(() => {
     const loadUser = async () => {
       const storedUser = await AsyncStorage.getItem("user");
@@ -20,21 +24,33 @@ export default function Login() {
       }
     };
     loadUser();
-  }, [user]); // `user` como dependencia para actualizar cuando cambia
+  }, [user]);
 
+  /**
+   * Función que redirige al usuario a la pantalla de inicio de sesión.
+   */
   const handleLogin = () => {
     router.push("/login");
   };
 
+  /**
+   * Función para eliminar los datos del usuario almacenados en AsyncStorage.
+   * Se utiliza para cerrar sesión.
+   */
+
   const deleteUser = async () => {
     try {
       await AsyncStorage.removeItem("user");
-      setLocalUser(undefined); // Usa `setLocalUser` para actualizar el estado local
+      setLocalUser(undefined);
     } catch (error) {
       console.error("Error deleting user:", error);
     }
   };
 
+  /**
+   * Función para manejar la salida del usuario, llamando a deleteUser.
+   * Se utiliza para cerrar sesión.
+   */
   const handleLogout = async () => {
     await deleteUser();
   };
@@ -44,13 +60,22 @@ export default function Login() {
       <ThemedText style={styles.title} type="title">
         Iniciar Sesión
       </ThemedText>
+
       {localUser ? (
         <>
-          <Text>Bienvenido {localUser.name}</Text>
-          <Button title="Log Out" onPress={handleLogout} />
+          <Text style={styles.welcomeText}>Bienvenido, {localUser.name}!</Text>
+          <TouchableOpacity style={styles.button} onPress={handleLogout}>
+            <ThemedText style={styles.buttonText} type="button">
+              Cerrar Sesión
+            </ThemedText>
+          </TouchableOpacity>
         </>
       ) : (
-        <Button title="Log In" onPress={handleLogin} />
+        <TouchableOpacity style={styles.button} onPress={handleLogin}>
+          <ThemedText style={styles.buttonText} type="button">
+            Iniciar Sesión
+          </ThemedText>
+        </TouchableOpacity>
       )}
     </View>
   );
@@ -60,24 +85,35 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
-    padding: 20,
+    alignItems: "center",
+    padding: 30,
     backgroundColor: "#A1CEDC",
   },
   title: {
-    fontSize: 32,
-    fontWeight: "bold",
+    fontSize: 36,
+    fontWeight: "700",
     textAlign: "center",
-    marginBottom: 20,
+    marginBottom: 40,
+    color: "#2D3E50",
+  },
+  welcomeText: {
+    fontSize: 18,
+    fontWeight: "500",
+    marginBottom: 30,
+    color: "#2D3E50",
   },
   button: {
     backgroundColor: "#1D3D47",
-    padding: 15,
-    borderRadius: 10,
+    paddingVertical: 15,
+    paddingHorizontal: 40,
+    borderRadius: 25,
     alignItems: "center",
+    width: "100%",
+    marginBottom: 15,
   },
   buttonText: {
     color: "#fff",
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: "600",
   },
 });

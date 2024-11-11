@@ -8,6 +8,9 @@ import {
 } from "react-native";
 import Providers from "./showProviders";
 import { useState } from "react";
+/* * Componente Services:
+   Este componente permite al usuario seleccionar un servicio (Transporte, Alimentación, Decoración)
+   y luego muestra los proveedores disponibles para el servicio seleccionado. */
 
 export default function Services() {
   const [selectedService, setSelectedService] = useState<string | null>(null);

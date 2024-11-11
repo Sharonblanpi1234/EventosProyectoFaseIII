@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 
-// eventTypes.ts (puedes crear un archivo separado para esto)
 export interface EventData {
     id_evento?: number;
     id_cliente: number | undefined;
@@ -22,7 +21,21 @@ interface EventAPIProps {
     onError: (errorMessage: string) => void;
     setIsSubmitting: React.Dispatch<React.SetStateAction<boolean>>;
 }
-
+/**
+ * Componente que maneja el envío de datos de un evento a través de una API.
+ * 
+ * Este componente toma los datos de un evento y los envía a una API mediante una solicitud POST.
+ * Se encarga de gestionar el estado de envío de datos (indicando si está enviando, y manejando los
+ * errores o éxitos), y llama a las funciones `onSuccess` o `onError` dependiendo del resultado.
+ * 
+ * @param {Object} props - Propiedades del componente.
+ * @param {EventData} props.eventData - Los datos del evento que se enviarán a la API.
+ * @param {Function} props.onSuccess - Función que se ejecuta cuando la respuesta de la API es exitosa.
+ * @param {Function} props.onError - Función que se ejecuta cuando ocurre un error en la solicitud.
+ * @param {Function} props.setIsSubmitting - Función para establecer el estado de envío de datos.
+ * 
+ * @returns {null} - El componente no renderiza nada, su propósito es realizar la solicitud de datos.
+ */
 
 const EventAPI: React.FC<EventAPIProps> = ({ eventData, onSuccess, onError, setIsSubmitting }) => {
     useEffect(() => {
@@ -50,7 +63,6 @@ const EventAPI: React.FC<EventAPIProps> = ({ eventData, onSuccess, onError, setI
                 console.error("Error de red:", error);
                 onError("Hubo un problema al guardar el evento. Intenta de nuevo.");
             } finally {
-                // Establecer el estado a 'false' una vez completada la solicitud
                 setIsSubmitting(false);
             }
         };
@@ -58,7 +70,7 @@ const EventAPI: React.FC<EventAPIProps> = ({ eventData, onSuccess, onError, setI
         if (eventData) {
             sendEventData();
         }
-    }, [eventData, onSuccess, onError]); // Solo ejecuta cuando cambia eventData
+    }, [eventData, onSuccess, onError]); 
 
     return null;
 };

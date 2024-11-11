@@ -6,13 +6,23 @@ interface EventsResponse {
   eventos: EventData[];
 }
 
+/**
+ * Hook personalizado para cargar los eventos asociados a un usuario.
+ * 
+ * Este hook realiza una solicitud HTTP para obtener los eventos registrados para un usuario específico,
+ * utilizando el `userId` proporcionado. Gestiona los estados de carga, error y los eventos obtenidos.
+ * Utiliza `useEffect` para ejecutar la solicitud cuando el `userId` cambia.
+ * 
+ * @param {number | undefined} userId - El ID del usuario para el cual se cargan los eventos.
+ * 
+ * @returns {Object} - Un objeto que contiene el estado de los eventos, el estado de carga y el error.
+ */
 export default function useLoadEvents(userId: number | undefined) {
   const [events, setEvents] = useState<EventData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Verifica que userId esté definido antes de hacer la solicitud
     if (userId === undefined) {
       setLoading(false);
       return;
@@ -20,7 +30,7 @@ export default function useLoadEvents(userId: number | undefined) {
 
     const fetchEvents = async () => {
       setLoading(true);
-      setError(null); // Resetea el estado de error antes de la solicitud
+      setError(null); 
 
       try {
         const response = await fetch("http://10.0.2.2:5000/showEvents", {
@@ -51,7 +61,7 @@ export default function useLoadEvents(userId: number | undefined) {
     };
 
     fetchEvents();
-  }, [userId]); // Solo ejecuta el efecto si userId cambia a un valor definido
+  }, [userId]); 
 
   return { events, loading, error };
 }

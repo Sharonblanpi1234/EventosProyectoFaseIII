@@ -1,7 +1,5 @@
 import useLoadProvider from "@/hooks/loadProvider";
-import { Link, router, useLocalSearchParams } from "expo-router";
-import { Route } from "expo-router/build/Route";
-import { useState } from "react";
+import { Link } from "expo-router";
 import {
   ScrollView,
   StyleSheet,
@@ -13,34 +11,26 @@ import {
 type ProvidersProps = {
   provider: string;
 };
-
+/**
+ * Función principal del componente Providers
+ *
+ * @param {ProvidersProps} props - Las propiedades que contiene el tipo de servicio (provider)
+ *
+ * El componente usa el hook useLoadProvider para cargar los proveedores de un servicio específico.
+ * Muestra una lista de proveedores con detalles de contacto y servicio, y un botón para ir a la lista de eventos de ese proveedor.
+ */
 export default function Providers({ provider }: ProvidersProps) {
   const { provider: providers, loading, error } = useLoadProvider(provider);
-  const [eventoId, setEventoId] = useState<number>(0);
-  const { eventId, message } = useLocalSearchParams();
 
   if (loading) return <Text style={styles.loadingText}>Cargando...</Text>;
   if (error) return <Text style={styles.errorText}>{error}</Text>;
-
-  // const handleId = (id: number) => {
-  //   setIdsProvider((prevIds) => {
-  //     if (prevIds.includes(id)) {
-  //       return prevIds.filter((itemId) => itemId !== id);
-  //     } else {
-  //       return [...prevIds, id];
-  //     }
-  //   });
-  // };
 
   return (
     <ScrollView contentContainerStyle={styles.buttonsContainer}>
       {providers?.proveedores?.map((provider) => (
         <View key={provider.id_proveedor} style={styles.card}>
           <View style={styles.providerDetails}>
-            <TouchableOpacity
-              style={styles.button}
-              //onPress={() => handleId(provider.id_proveedor)}
-            >
+            <TouchableOpacity style={styles.button}>
               <Text style={styles.buttonText}>{provider.nombre}</Text>
               <Text style={styles.serviceText}>
                 Servicio: {provider.servicio}
@@ -57,7 +47,6 @@ export default function Providers({ provider }: ProvidersProps) {
               </Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.submitButton}>
-              {/* Link envuelve todo el TouchableOpacity */}
               <Link
                 href={`/eventList?providerId=${provider.id_proveedor}&message=Seleccione el evento`}
                 asChild
@@ -85,8 +74,8 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     borderRadius: 10,
     overflow: "hidden",
-    backgroundColor: "#A1CEDC", // Color verde agua suave
-    elevation: 4, // Sombra para efecto 3D
+    backgroundColor: "#A1CEDC",
+    elevation: 4,
   },
   providerDetails: {
     flexDirection: "row",
@@ -97,18 +86,18 @@ const styles = StyleSheet.create({
   button: {
     flex: 1,
     padding: 10,
-    backgroundColor: "#A1CEDC", // Color principal
+    backgroundColor: "#A1CEDC",
     borderRadius: 10,
-    marginRight: 10, // Espacio entre el botón y el botón de enviar
+    marginRight: 10,
   },
   buttonText: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "#004d40", // Texto oscuro para contraste
+    color: "#004d40",
   },
   serviceText: {
     fontSize: 16,
-    color: "#00796b", // Texto en verde agua más oscuro
+    color: "#00796b",
   },
   contactText: {
     fontSize: 16,
@@ -130,11 +119,11 @@ const styles = StyleSheet.create({
   errorText: {
     fontSize: 18,
     textAlign: "center",
-    color: "red", // Color para errores
+    color: "red",
   },
   submitButton: {
     padding: 10,
-    backgroundColor: "#00796b", // Botón de enviar en verde agua oscuro
+    backgroundColor: "#00796b",
     borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
@@ -142,6 +131,6 @@ const styles = StyleSheet.create({
   submitButtonText: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#ffffff", // Texto blanco
+    color: "#ffffff",
   },
 });

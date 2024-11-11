@@ -1,17 +1,27 @@
 import { useEffect, useState } from "react";
-import { Alert } from "react-native";
+import { Alert, LayoutAnimation } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Notification } from "./saveNotification";
 
 interface NotificationsResponse {
   listaNotificaciones: Notification[];
 }
+/**
+ * Hook personalizado para cargar las notificaciones de un usuario.
+ * 
+ * Este hook realiza una solicitud HTTP para obtener las notificaciones asociadas a un usuario específico
+ * utilizando el `userId`. Además, se configura un intervalo para recargar las notificaciones cada 30 segundos
+ * y compara los datos obtenidos con los ya existentes para actualizar el estado solo si ha habido cambios.
+ * 
+ * @param {number | undefined} userId - El ID del usuario para el cual se cargan las notificaciones.
+ * 
+ * @returns {Object} - Un objeto que contiene las notificaciones, el estado de carga y el error.
+ */
 
 export default function useLoadNotifications(userId: number | undefined) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [newNotification, setNewNotification] = useState<boolean>(false);
-
   useEffect(() => {
     if (userId === undefined) {
       setLoading(false);
@@ -32,13 +42,15 @@ export default function useLoadNotifications(userId: number | undefined) {
         });
 
         const data: NotificationsResponse = await response.json();
-        console.log(data);
 
-        if (data && data.listaNotificaciones.length) {
+        
+        if (
+          data &&
+          (data.listaNotificaciones.length !== notifications.length ||
+            JSON.stringify(data.listaNotificaciones) !== JSON.stringify(notifications))
+        ) {
+          LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
           setNotifications(data.listaNotificaciones);
-          setNewNotification(true); // Hay notificaciones nuevas
-        } else {
-          setNewNotification(false); // No hay nuevas notificaciones
         }
       } catch (error) {
         console.error(error);
@@ -49,17 +61,14 @@ export default function useLoadNotifications(userId: number | undefined) {
       }
     };
 
-    fetchNotifications(); // Cargar notificaciones al principio
+    fetchNotifications(); 
 
-    // Configurar recarga cada 30 segundos
+
     const interval = setInterval(() => {
       fetchNotifications();
-    }, 30000); // 30 segundos
+    }, 30000);
 
-    // Limpiar el intervalo cuando el componente se desmonte
     return () => clearInterval(interval);
-
-  }, [userId]); // Solo se ejecuta cuando userId cambia
-
-  return { notifications, loading, error, newNotification };
+  }, [userId, notifications.length]); 
+  return { notifications, loading, error };
 }

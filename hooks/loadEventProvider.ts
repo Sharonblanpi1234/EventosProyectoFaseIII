@@ -3,6 +3,9 @@ import { Alert } from "react-native";
 
 interface EventProvider {
   nombre_proveedor: string,
+  telefono: string,
+  email: string,
+  website: string,
   nombre_evento: string,
   servicio: string,
   estado: string,
@@ -13,7 +16,18 @@ interface EventProvider {
 interface ProvidersResponse {
   listaConexiones: EventProvider[];
 }
-
+/**
+ * Hook personalizado para cargar solicitudes de un evento.
+ * 
+ * Este hook realiza una solicitud HTTP para obtener la lista de solicitudes relacionadas con un evento,
+ * según el ID del evento y el ID del usuario. Maneja el estado de carga, error y los datos obtenidos.
+ * Utiliza `useEffect` para hacer la solicitud cuando cambian los parámetros `id_evento` o `userId`.
+ * 
+ * @param {number} id_evento - El ID del evento para el cual se buscan proveedores.
+ * @param {number | undefined} userId - El ID del usuario para la autenticación o filtrado.
+ * 
+ * @returns {Object} - Un objeto que contiene el estado de la carga, el error y los datos de los proveedores.
+ */
 export default function useLoadEventProvider(id_evento: number, userId:number | undefined) {
   const [eventProvider, setEventProvider] = useState<ProvidersResponse | null>(null);
   const [error, setError] = useState<string | null>(null);

@@ -1,5 +1,4 @@
-import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -8,7 +7,6 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
-  Button,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useLoadUser } from "../hooks/loadUser";
@@ -16,6 +14,11 @@ import { Calendar } from "react-native-calendars";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import EventAPI, { EventData } from "@/hooks/saveEvent";
 
+/**
+ * Componente que representa un formulario para registrar un evento.
+ * Permite al usuario ingresar los detalles del evento como nombre,
+ * fecha, hora, alimentación, decoración, transporte, lugar y asistentes.
+ */
 export default function EventForm() {
   const { user } = useLoadUser();
   const [nombreEvento, setNombreEvento] = useState("");
@@ -33,9 +36,9 @@ export default function EventForm() {
   const [showStartTimePicker, setShowStartTimePicker] = useState(false);
   const [showEndTimePicker, setShowEndTimePicker] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [eventData, setEventData] = useState<EventData | null>(null); // Estado para pasar los datos a EventAPI
-  //console.log("user", user?.id);
+  const [eventData, setEventData] = useState<EventData | null>(null);
 
+  /** Maneja el guardado del evento */
   const handleSaveEvent = () => {
     if (
       !nombreEvento ||
@@ -98,7 +101,7 @@ export default function EventForm() {
 
   const handleDateSelect = (day: { dateString: string }) => {
     setSelectedDate(day.dateString);
-    setShowCalendar(false); // Oculta el calendario al seleccionar la fecha
+    setShowCalendar(false);
   };
 
   const handleStartTimeChange = (
@@ -223,10 +226,10 @@ export default function EventForm() {
       <TextInput
         style={styles.inputText}
         placeholder="Número de invitados"
-        value={String(asistentes)} // Convierte el número a string para mostrarlo
-        onChangeText={(text) => setAsistentes(text ? parseInt(text) : 0)} // Convierte el texto a número
-        keyboardType="numeric" // Asegura que se muestre el teclado numérico
-        multiline={false} // Asegura que no se permita varias líneas
+        value={String(asistentes)}
+        onChangeText={(text) => setAsistentes(text ? parseInt(text) : 0)}
+        keyboardType="numeric"
+        multiline={false}
       />
 
       <TouchableOpacity style={styles.button} onPress={handleSaveEvent}>

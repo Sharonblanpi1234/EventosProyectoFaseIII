@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 
-// eventTypes.ts (puedes crear un archivo separado para esto)
 export interface Notification {
     id_notificacion?: number;
     id_evento: number | undefined;
@@ -15,7 +14,21 @@ interface EventNotificationProps {
     onSuccess: (responseData: any) => void;
     onError: (errorMessage: string) => void;
 }
-
+/**
+ * Componente que maneja el envío de una notificación de evento a través de una API.
+ * 
+ * Este componente recibe una notificación de evento y la envía a una API mediante una solicitud POST.
+ * Gestiona el estado de envío (indicando si el proceso está en curso) y maneja la respuesta de la API, 
+ * llamando a las funciones `onSuccess` o `onError` según el resultado.
+ * 
+ * @param {Object} props - Propiedades del componente.
+ * @param {Notification} props.notification - La notificación de evento que se enviará a la API.
+ * @param {Function} props.onSuccess - Función que se ejecuta cuando la respuesta de la API es exitosa.
+ * @param {Function} props.onError - Función que se ejecuta cuando ocurre un error en la solicitud.
+ * @param {Function} props.setIsSubmitting - Función para establecer el estado de envío de datos.
+ * 
+ * @returns {null} - El componente no renderiza nada, su propósito es realizar la solicitud de datos.
+ */
 
 const EventNotification: React.FC<EventNotificationProps> = ({ notification, onSuccess, onError, setIsSubmitting }) => {
     useEffect(() => {
@@ -43,7 +56,6 @@ const EventNotification: React.FC<EventNotificationProps> = ({ notification, onS
                 console.error("Error de red:", error);
                 onError("Hubo un problema al guardar el evento. Intenta de nuevo.");
             } finally {
-                // Establecer el estado a 'false' una vez completada la solicitud
                 setIsSubmitting(false);
             }
         };
@@ -51,7 +63,7 @@ const EventNotification: React.FC<EventNotificationProps> = ({ notification, onS
         if (notification) {
             sendEventData();
         }
-    }, [notification, onSuccess, onError]); // Solo ejecuta cuando cambia eventData
+    }, [notification, onSuccess, onError]); 
     return null;
 };
 

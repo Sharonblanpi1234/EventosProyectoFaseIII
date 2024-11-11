@@ -1,12 +1,21 @@
-// EventCard.tsx
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { EventData } from "@/hooks/saveEvent";
 
+/**
+ * Propiedades que recibe el componente EventCard.
+ * El componente espera un objeto de tipo EventData que contiene
+ * la información del evento que se debe mostrar.
+ */
 interface EventCardProps {
   event: EventData;
 }
 
+/**
+ * Componente funcional EventCard.
+ * Muestra los detalles del evento en una tarjeta, incluyendo nombre,
+ * fecha, hora, asistentes y otros servicios relacionados.
+ */
 const EventCard: React.FC<EventCardProps> = ({ event }) => {
   return (
     <View style={styles.card}>

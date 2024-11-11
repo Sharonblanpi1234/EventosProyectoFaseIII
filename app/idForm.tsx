@@ -8,6 +8,10 @@ import {
   TouchableOpacity,
 } from "react-native";
 
+/* * Componente IdForm:
+   Este componente permite al usuario ingresar un número de identificación de evento,
+   y al presionar el botón, redirige al usuario a la lista de solicitudes del evento. */
+
 const IdForm: React.FC = () => {
   const [idEvento, setIdEvento] = useState("");
 
@@ -25,12 +29,11 @@ const IdForm: React.FC = () => {
           keyboardType="numeric"
         />
       </View>
-      <TouchableOpacity style={styles.button}>
-        {/* Link envuelve todo el TouchableOpacity */}
-        <Link href={`/eventProviderList?idEvento=${idEvento}`} asChild>
-          <Text style={styles.button}>Ver Estado</Text>
-        </Link>
-      </TouchableOpacity>
+      <Link href={`/eventProviderList?idEvento=${idEvento}`} asChild>
+        <TouchableOpacity style={styles.button}>
+          <Text style={styles.buttonText}>Ver Estado</Text>
+        </TouchableOpacity>
+      </Link>
     </View>
   );
 };
@@ -40,7 +43,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#E0F7F7", // Fondo de pantalla verde agua claro
+    backgroundColor: "#E0F7F7", // Fondo verde agua claro
   },
   container: {
     width: 300, // Aumenta el ancho del contenedor
@@ -78,15 +81,18 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   button: {
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 20,
-    backgroundColor: "#80CBC4", // Color del botón verde agua
-    color: "#fff",
+    paddingVertical: 10,
+    paddingHorizontal: 25,
+    borderRadius: 30,
+    backgroundColor: "#A1CEDC", // Botón verde agua
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 10, // Espacio entre el botón y el input
+  },
+  buttonText: {
+    color: "black",
     fontWeight: "bold",
-    textAlign: "center",
-    width: "100%",
-    overflow: "hidden",
+    fontSize: 16,
   },
 });
 

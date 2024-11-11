@@ -6,33 +6,73 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import useLoadNotifications from "@/hooks/loadNotifications";
 import { useLoadUser } from "@/hooks/loadUser";
 import { View, StyleSheet } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Notification } from "@/hooks/saveNotification";
+/**
+ * Componente que configura el diseño de navegación de pestañas para la aplicación.
+ * Este componente configura y renderiza diferentes pestañas con iconos, e incluye
+ * un indicador para señalar nuevas notificaciones.
+ * @returns {JSX.Element} - El diseño de pestañas de la aplicación
+ */
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-  const { user } = useLoadUser(); // Incluye loading y error
+  const { user } = useLoadUser();
   const userId = user?.id;
-
-  // Obtener las notificaciones usando el hook
   const { notifications, loading, error } = useLoadNotifications(userId);
-  const [updatedNotifications, setUpdatedNotifications] =
-    useState(notifications);
+  const [updatedNotification, setUpdatedNotification] = useState(false);
 
-  // Estado para controlar si hay una nueva notificación
-  const [newNotification, setNewNotification] = useState<boolean>(false);
+  /**
+   * Verifica nuevas notificaciones comparando las notificaciones actuales con las almacenadas.
+   * Si hay nuevas notificaciones, actualiza el estado para mostrar un punto en la pestaña.
+   * @param {Notification[]} notifications - Lista de notificaciones actuales.
+   * @param {Function} setUpdatedNotification - Función para actualizar el estado de notificaciones nuevas.
+   */
 
-  // Cuando se obtienen las notificaciones, comprobamos si hay una nueva
-  useEffect(() => {
-    if (notifications.length > updatedNotifications.length) {
-      setNewNotification(true); // Si hay notificaciones, marcar como nueva
-    } else {
-      setNewNotification(false); // Si no hay notificaciones, quitar el estado
+  const checkNotificationStatus = async (
+    notifications: Notification[],
+    setUpdatedNotification: {
+      (value: React.SetStateAction<boolean>): void;
+      (arg0: boolean): void;
     }
+  ) => {
+    try {
+      const newNotifications = JSON.stringify(notifications);
+
+      const seenNotifications = await AsyncStorage.getItem("Notifications");
+
+      if (seenNotifications !== "[]" && newNotifications !== "[]") {
+        if (seenNotifications !== newNotifications) {
+          setUpdatedNotification(true);
+          await AsyncStorage.setItem("Notifications", newNotifications);
+        } else {
+          setUpdatedNotification(false);
+        }
+      } else {
+        setUpdatedNotification(false);
+        await AsyncStorage.setItem("Notifications", newNotifications);
+      }
+    } catch (error) {
+      console.error(
+        "Error al verificar el estado de las notificaciones:",
+        error
+      );
+    }
+  };
+
+  /**
+   * useEffect para verificar el estado de las notificaciones cada vez que cambian.
+   */
+  useEffect(() => {
+    checkNotificationStatus(notifications, setUpdatedNotification);
   }, [notifications]);
 
-  // Función para manejar la entrada a la pantalla de notificaciones
+  /**
+   * Restablece el estado de la notificación cuando el usuario accede a la pestaña de notificaciones.
+   */
   const handleTabPress = () => {
-    if (newNotification) {
-      setNewNotification(false); // Eliminar el punto cuando el usuario entra en la pestaña de notificaciones
+    if (updatedNotification) {
+      setUpdatedNotification(false);
     }
   };
 
@@ -46,7 +86,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Home",
+          title: "Página Principal",
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
               name={focused ? "home" : "home-outline"}
@@ -58,7 +98,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="settings"
         options={{
-          title: "Settings",
+          title: "Ajustes",
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
               name={focused ? "settings" : "settings-outline"}
@@ -70,31 +110,32 @@ export default function TabLayout() {
       <Tabs.Screen
         name="notifications"
         options={{
-          title: "Notifications",
+          title: "Notificaciones",
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon
-              name={focused ? "notifications" : "notifications-outline"}
-              color={color}
-              onPress={handleTabPress} // Llamar a la función cuando se presiona
-            >
+            <View style={styles.iconContainer}>
+              <TabBarIcon
+                name={focused ? "notifications" : "notifications-outline"}
+                color={color}
+              />
               {/* Mostrar el punto si hay nuevas notificaciones */}
-              {newNotification && !focused && (
+              {updatedNotification && !focused && (
                 <View style={styles.notificationDot} />
               )}
-            </TabBarIcon>
+            </View>
           ),
         }}
         listeners={{
           tabPress: () => {
             // Restablecer el estado de nueva notificación cuando el usuario entre en la pestaña
-            setNewNotification(false);
+            handleTabPress();
           },
         }}
       />
+
       <Tabs.Screen
         name="user"
         options={{
-          title: "User",
+          title: "Usuario",
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
               name={focused ? "person" : "person-outline"}
@@ -108,10 +149,13 @@ export default function TabLayout() {
 }
 
 const styles = StyleSheet.create({
+  iconContainer: {
+    position: "relative",
+  },
   notificationDot: {
     position: "absolute",
-    top: 0,
-    right: 0,
+    top: -4,
+    right: -4,
     width: 10,
     height: 10,
     backgroundColor: "red",
